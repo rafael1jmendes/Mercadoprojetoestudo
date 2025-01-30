@@ -86,52 +86,51 @@ public class Mercado {
         menu();
     }
     private static void comprarProdutos() {
-        if (products.size() > 0) {
-            System.out.println("CODIGO DO PRODUTO: \n");
-
-            System.out.println("--------------PRODUTOS DISPONIVEIS-------------");
-            for (Product p : products) {
-                System.out.println(p + "\n");
-            }
-            int id = Integer.parseInt(input.next());
-            boolean isPresent = false;
-
-            for (Product p : products) {
-                if (p.getId() == id) {
-                    int qtd = 0;
-                    try {
-                       qtd = carrinho.get(p);
-                       // checar se o produto ja esta no carrinho. acrescenta qtd
-                       carrinho.put(p, qtd + 1);
-                    } catch (NullPointerException e) {
-                        // se o produto for o primeiro do carrinho
-                        carrinho.put(p, 1);
-                    }
-
-                    System.out.println(p.getName() + "ADICIONADO AO CARRINHO COM SUCESSO!");
-                    isPresent = true;
-
-                    if (isPresent){
-                        System.out.println("DESEJAR ADICIONAR OUTRO PRODUTO ?");
-                        System.out.println("DIGITE 1 PARA SIM, OU 0 PARA FINALIZAR A COMPRA \n");
-                        int option = Integer.parseInt(input.next());
-
-                        if (option == 1) {
-                            comprarProdutos();
-                        } else {
-                            finalizarCompra();
-                        }
-                    }
-                } else {
-                    System.out.println("NENHUM PRODUTO NA LISTA");
-                    menu();
-                }
-            }
-        } else {
+        if (products.isEmpty()) {
             System.out.println("PRODUTO NAO CADASTRADO");
             menu();
+            return;
+        }
+
+        System.out.println("--------------PRODUTOS DISPONIVEIS-------------");
+        for (Product p : products) {
+            System.out.println(p + "\n");
+        }
+
+        System.out.println("CODIGO DO PRODUTO: ");
+        int id = Integer.parseInt(input.next());
+
+        Product produtoSelecionado = null;
+        for (Product p : products) {
+            if (p.getId() == id) {
+                produtoSelecionado = p;
+                break;
+            }
+        }
+
+        if (produtoSelecionado == null) {
+            System.out.println("NENHUM PRODUTO NA LISTA");
+            menu();
+            return;
+        }
+
+        // Adicionando ao carrinho
+        int qtd = carrinho.getOrDefault(produtoSelecionado, 0);
+        carrinho.put(produtoSelecionado, qtd + 1);
+
+        System.out.println(produtoSelecionado.getName() + " ADICIONADO AO CARRINHO COM SUCESSO!");
+
+        System.out.println("DESEJA ADICIONAR OUTRO PRODUTO?");
+        System.out.println("DIGITE 1 PARA SIM, OU 0 PARA FINALIZAR A COMPRA");
+        int option = Integer.parseInt(input.next());
+
+        if (option == 1) {
+            comprarProdutos();
+        } else {
+            finalizarCompra();
         }
     }
+
 
     private static void verCarrinho() {
         System.out.println("---PRODUTOS NO SEU CARRINHO---");
